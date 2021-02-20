@@ -1,0 +1,85 @@
+swagger:
+  title: 毕业设计（多媒体信息化系统）
+  description: 毕业设计API
+  version: 1.4.0.RELEASE
+  license: Apache License, Version 2.0
+  licenseUrl: https://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfServiceUrl: https://github.com/dyc87112/spring-boot-starter-swagger
+  contact:
+    name: 曾辉
+    contact.url: http://blog.didispace.com
+    contact.email: 1210128434@qq.com
+    base-package: com.zenghui
+    base-path: /**
+
+# tomcat配置
+server:
+  port:
+  address:
+  servlet:
+    context-path:
+    session:
+      timeout: 30m
+  tomcat:
+    uri-encoding: utf-8
+
+# spring配置
+spring:
+  servlet:
+    # 上传文件配置
+    multipart:
+      max-file-size: 2049MB
+      max-request-size: 2049MB
+    # 字符配置
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  mvc:
+    date-format: yyyy-MM-dd
+    throw-exception-if-no-handler-found: true
+
+  #数据库 JPA配置
+  datasource:
+    name:  MySQL
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/bysj?useUnicode=true&characterEncoding=UTF8&zeroDateTimeBehavior=convertToNull&serverTimezone=Asia/Shanghai
+    username: root
+    password: a1210128434
+      # Hikari 连接池配置
+    # 最小空闲连接数量
+    hikari:
+      minimum-idle: 5
+      # 空闲连接存活最大时间，默认600000（10分钟）
+      idle-timeout: 180000
+      # 连接池最大连接数，默认是10
+      maximum-pool-size: 10
+      # 此属性控制从池返回的连接的默认自动提交行为,默认值：true
+      auto-commit: true
+      # 连接池名称
+      pool-name: MyHikariCP
+      # 此属性控制池中连接的最长生命周期，值0表示无限生命周期，默认1800000即30分钟
+      max-lifetime: 1800000
+      # 数据库连接超时时间,默认30秒，即30000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+  jpa:
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        format_sql: true
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    show-sql: true
+    open-in-view: true
+
+
+# 文件上传路径
+file:
+  path:
+
+
+
