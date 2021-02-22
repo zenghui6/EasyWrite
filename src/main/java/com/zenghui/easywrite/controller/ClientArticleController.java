@@ -1,5 +1,6 @@
 package com.zenghui.easywrite.controller;
 
+import com.zenghui.easywrite.common.api.ApiResult;
 import com.zenghui.easywrite.entity.client.ClientArticle;
 import com.zenghui.easywrite.service.ClientArticleService;
 import org.springframework.web.bind.annotation.*;
@@ -33,8 +34,9 @@ public class ClientArticleController {
      */
     @ApiOperation("通过主键查找一条")
     @GetMapping("article/{id}")
-    public ClientArticle selectOne(@PathVariable("id") String id) {
-        return this.clientArticleService.queryById(id);
+    public ApiResult<ClientArticle> selectOne(@PathVariable("id") String id) {
+        ClientArticle  data = this.clientArticleService.findOneById(id);
+        return ApiResult.success(data);
     }
 
 }

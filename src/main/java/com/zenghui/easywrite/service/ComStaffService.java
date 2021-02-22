@@ -5,6 +5,7 @@ import com.zenghui.easywrite.entity.staff.ComStaff;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 
 /**
  * 员工信息等级表(ComStaff)表服务接口
@@ -13,15 +14,15 @@ import org.springframework.data.domain.Page;
  * @since 2021-02-20 18:12:17
  */
 public interface ComStaffService {
-    ComStaff queryById(String id);
+    void add(ComStaff account);
 
-    Page<ComStaff> queryAllByLimit(int offset, int limit);
+    Page<ComStaff> findAllExist(int page, int size);
 
-    ComStaff insert(ComStaff comStaff);
+    Page<ComStaff> findAllDeleted(int page,int size);
 
-    ComStaff update(ComStaff comStaff);
+    Page<ComStaff> findAllByKeywords(String keywords, String active, int page, int size, Sort.Direction direction);
 
-    boolean deleteById(String id);
+    ComStaff findOneById(String id);
 
-    List<ComStaff> getall();
+
 }
