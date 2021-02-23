@@ -21,6 +21,16 @@ import java.util.Date;
  */
 @Repository
 public interface ComStaffDao extends JpaRepository<ComStaff, String> {
+
+    /**
+     * 注册时查找是否 账号或昵称已被注册
+     * @param nickname
+     * @param name
+     * @return
+     */
+    ComStaff findComStaffByNicknameEqualsAndNameEquals(String nickname,String name);
+
+
     /**
      * 通过id(账号)查找某一个用户，忽略是否被软删除过
      * @param id
@@ -30,11 +40,11 @@ public interface ComStaffDao extends JpaRepository<ComStaff, String> {
 
 
     /**
-     * 通过nickname(账号)查找某一个用户，忽略是否被软删除过
-     * @param nickname
+     * 通过name(账号)查找某一个用户，忽略是否被软删除过
+     * @param name
      * @return
      */
-    ComStaff findByNickname(String nickname);
+    ComStaff findByName(String name);
 
     /**
      * 软删除某一个用户

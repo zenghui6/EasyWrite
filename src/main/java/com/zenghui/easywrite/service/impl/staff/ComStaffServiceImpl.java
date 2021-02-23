@@ -1,9 +1,16 @@
 package com.zenghui.easywrite.service.impl.staff;
 
+import cn.hutool.core.util.ObjectUtil;
+import com.zenghui.easywrite.common.exception.ApiAsserts;
+import com.zenghui.easywrite.dto.LoginDTO;
+import com.zenghui.easywrite.dto.RegisterDTO;
 import com.zenghui.easywrite.entity.staff.ComStaff;
 import com.zenghui.easywrite.dao.staff.ComStaffDao;
+import com.zenghui.easywrite.jwt.JwtUtil;
 import com.zenghui.easywrite.service.ComStaffService;
+import com.zenghui.easywrite.utils.MD5Utils;
 import com.zenghui.easywrite.utils.SnowflakeIdWorker;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +30,7 @@ import java.util.List;
  * @author zenghui
  * @since 2021-02-20 18:12:17
  */
+@Slf4j
 @Service("comStaffService")
 public class ComStaffServiceImpl implements ComStaffService {
     @Resource
@@ -83,13 +91,64 @@ public class ComStaffServiceImpl implements ComStaffService {
     }
 
     /**
+     * 注册用户，分配权限为普通员工，管理员员工不提供注册接口
+     * @param dto
+     * @return
+     */
+    @Override
+    public ComStaff executeRegister(RegisterDTO dto) {
+        //查询是否有相同用户名的用户
+        ComStaff account = comStaffDao.findComStaffByNicknameEqualsAndNameEquals(dto.getNikeName(),dto.getName());
+        if (!ObjectUtil.isEmpty(account)){
+            ApiAsserts.fail("账号或者昵称已存在！");
+        }
+        ComStaff addAccount = ComStaff.builder()
+                .nickname(dto.getNikeName())
+                .name(dto.getName())
+                .password(MD5Utils.getPwd(dto.getPass()))
+                .createAt(new Date())
+                .id(snowflakeIdWorker.nextId())
+                .createBy("user")
+                .updateAt(new Date())
+                .isDel(false)
+                .updateBy("user")
+                .level("1")
+                .build();
+        comStaffDao.save(addAccount);
+
+        return addAccount;
+    }
+
+    /**
+     * 登录,并返回token
+     * @param dto
+     * @return
+     */
+    @Override
+    public String executeLogin(LoginDTO dto) {
+        String token = null;
+        try {
+            ComStaff account = comStaffDao.findByName(dto.getUsername());
+            String encodePwd = MD5Utils.getPwd(dto.getPassword());
+            if (!encodePwd.equals(account.getPassword()))
+            {
+                throw new Exception("密码错误");
+            }
+            token = JwtUtil.generateToken(String.valueOf(account.getName()));
+        } catch (Exception e) {
+            log.warn("用户不存在or密码验证失败=======>{}", dto.getUsername());
+        }
+        return token;
+    }
+
+    /**
      * 通过nickname查找某一个用户
-     * @param nickname
+     * @param name
      * @return
      */
 
-    public ComStaff findOne(String nickname) {
-        return comStaffDao.findByNickname(nickname);
+    public ComStaff findOne(String name) {
+        return comStaffDao.findByName(name);
     }
 
     /**
@@ -133,11 +192,11 @@ public class ComStaffServiceImpl implements ComStaffService {
 
     /**
      * 判断用户是否存在，用户不存在，直接返回，用户存在，进入下一步密码判断
-     * @param nickname
+     * @param name
      * @return
      */
-    public boolean isExistByNickname(String nickname) {
-        ComStaff account = comStaffDao.findByNickname(nickname);
+    public boolean isExistByName(String name) {
+        ComStaff account = comStaffDao.findByName(name);
         if(account != null){
             return !account.getIsDel();
         }

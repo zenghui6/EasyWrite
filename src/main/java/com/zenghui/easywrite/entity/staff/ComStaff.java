@@ -3,6 +3,7 @@ package com.zenghui.easywrite.entity.staff;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import io.swagger.annotations.ApiModelProperty;
@@ -30,6 +31,7 @@ import java.util.Date;
 @JsonIgnoreProperties(value = {"hibernateLazyInitializer"})
 //lombok
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ComStaff implements Serializable {

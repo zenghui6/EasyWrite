@@ -1,5 +1,7 @@
 package com.zenghui.easywrite.service;
 
+import com.zenghui.easywrite.dto.LoginDTO;
+import com.zenghui.easywrite.dto.RegisterDTO;
 import com.zenghui.easywrite.entity.staff.ComStaff;
 
 import java.util.List;
@@ -24,5 +26,8 @@ public interface ComStaffService {
 
     ComStaff findOneById(String id);
 
+    ComStaff executeRegister(RegisterDTO dto);
+
+    String executeLogin(LoginDTO dto);
 
 }
