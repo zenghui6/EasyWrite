@@ -29,6 +29,7 @@ public class AccountController {
 
     @PostMapping("/register")
     public ApiResult<Map<String, Object>> register(@Valid @RequestBody RegisterDTO dto) {
+        System.out.println(dto);
         ComStaff user = comStaffService.executeRegister(dto);
         if (ObjectUtils.isEmpty(user)) {
             return ApiResult.failed("账号注册失败");
@@ -56,7 +57,7 @@ public class AccountController {
      * @return
      */
     @GetMapping("/info")
-    public ApiResult<ComStaff> getUser(@RequestHeader(value = "USER_NAME") String username ){
+    public ApiResult<ComStaff> getUser(@RequestHeader(value = "userName") String username ){
         ComStaff data = comStaffService.getUserByUsername(username);
         return ApiResult.success(data);
     }

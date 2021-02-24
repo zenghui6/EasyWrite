@@ -98,12 +98,12 @@ public class ComStaffServiceImpl implements ComStaffService {
     @Override
     public ComStaff executeRegister(RegisterDTO dto) {
         //查询是否有相同用户名的用户
-        ComStaff account = comStaffDao.findComStaffByNicknameEqualsAndNameEquals(dto.getNikeName(),dto.getName());
+        ComStaff account = comStaffDao.findComStaffByNicknameEqualsAndNameEquals(dto.getNickName(),dto.getName());
         if (!ObjectUtil.isEmpty(account)){
             ApiAsserts.fail("账号或者昵称已存在！");
         }
         ComStaff addAccount = ComStaff.builder()
-                .nickname(dto.getNikeName())
+                .nickname(dto.getNickName())
                 .name(dto.getName())
                 .password(MD5Utils.getPwd(dto.getPass()))
                 .createAt(new Date())
@@ -129,14 +129,15 @@ public class ComStaffServiceImpl implements ComStaffService {
         String token = null;
         try {
             ComStaff account = comStaffDao.findByName(dto.getUsername());
+            String level = dto.getLevel();
             String encodePwd = MD5Utils.getPwd(dto.getPassword());
-            if (!encodePwd.equals(account.getPassword()))
+            if (!encodePwd.equals(account.getPassword()) || !level.equals(account.getLevel()))
             {
-                throw new Exception("密码错误");
+                throw new Exception("密码错误||等级错误");
             }
             token = JwtUtil.generateToken(String.valueOf(account.getName()),String.valueOf(account.getLevel()));
         } catch (Exception e) {
-            log.warn("用户不存在or密码验证失败=======>{}", dto.getUsername());
+            log.warn("用户不存在or密码验证失败or等级验证错误=======>{}", dto.getUsername());
         }
         return token;
     }

@@ -12,7 +12,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * OncePerRequestFilter是在一次外部请求中只过滤一次。对于服务器内部之间的forward等请求，不会再次执行过滤方法
+ * 过滤器需要在配置类中注册
+ */
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final PathMatcher pathMatcher = new AntPathMatcher();
 
@@ -21,7 +24,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             if(isProtectedUrl(request)) {
-//                System.out.println(request.getMethod());
                 if(!request.getMethod().equals("OPTIONS"))
                     request = JwtUtil.validateTokenAndAddUserIdToHeader(request);
             }
@@ -34,9 +36,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 //    受保护的URL
     private boolean isProtectedUrl(HttpServletRequest request) {
+//        System.out.println(request.getMethod());
         List<String> protectedPaths = new ArrayList<String>();
-        protectedPaths.add("/admin/*");
-        protectedPaths.add("/ums/user/update");
+        protectedPaths.add("/account/info");
 
         boolean bFind = false;
         for( String passedPath : protectedPaths ) {

@@ -19,5 +19,5 @@ public class RegisterDTO {
     private String pass;
 
     @NotEmpty(message = "请输入昵称")
-    private String nikeName;
+    private String nickName;
 }
