@@ -73,7 +73,7 @@ spring:
 
 # 文件上传路径
 file:
-  path:
+  path: D:/upload/
 
 
 

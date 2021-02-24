@@ -112,7 +112,7 @@ public class ComStaffServiceImpl implements ComStaffService {
                 .updateAt(new Date())
                 .isDel(false)
                 .updateBy("user")
-                .level("1")
+                .level("staff")
                 .build();
         comStaffDao.save(addAccount);
 
@@ -134,11 +134,16 @@ public class ComStaffServiceImpl implements ComStaffService {
             {
                 throw new Exception("密码错误");
             }
-            token = JwtUtil.generateToken(String.valueOf(account.getName()));
+            token = JwtUtil.generateToken(String.valueOf(account.getName()),String.valueOf(account.getLevel()));
         } catch (Exception e) {
             log.warn("用户不存在or密码验证失败=======>{}", dto.getUsername());
         }
         return token;
+    }
+
+    @Override
+    public ComStaff getUserByUsername(String username) {
+        return comStaffDao.findByName(username);
     }
 
     /**

@@ -30,4 +30,5 @@ public interface ComStaffService {
 
     String executeLogin(LoginDTO dto);
 
+    ComStaff getUserByUsername(String username);
 }

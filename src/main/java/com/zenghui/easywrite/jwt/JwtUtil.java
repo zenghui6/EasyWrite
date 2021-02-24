@@ -16,16 +16,18 @@ public class JwtUtil {
     public static final String TOKEN_PREFIX = "Bearer ";
     public static final String HEADER_STRING = "Authorization";
     public static final String USER_NAME = "userName";
+    public static final String LEVEL = "level";
 
     /**
-     * 生成 token
-     * @param userId
+     *  根据userName 和 level 生成 token
+     * @param userName, level
      * @return
      */
-    public static String generateToken(String userId) {
+    public static String generateToken(String userName,String level) {
         HashMap<String, Object> map = new HashMap<>();
         //you can put any data in the map
-        map.put(USER_NAME, userId);
+        map.put(USER_NAME, userName);
+        map.put(LEVEL,level);
         String jwt = Jwts.builder()
                 .setClaims(map)
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
@@ -39,6 +41,7 @@ public class JwtUtil {
         if (token != null) {
             // parse the token.
             try {
+                //解析出 USER_NAME, LEVEL 的map；
                 Map<String, Object> body = Jwts.parser()
                         .setSigningKey(SECRET)
                         .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
