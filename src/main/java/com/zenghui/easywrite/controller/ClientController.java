@@ -1,7 +1,7 @@
 package com.zenghui.easywrite.controller;
 
 import com.zenghui.easywrite.common.api.ApiResult;
-import com.zenghui.easywrite.dto.PageResult;
+import com.zenghui.easywrite.vo.web.PageResult;
 import com.zenghui.easywrite.dto.SearchDto;
 import com.zenghui.easywrite.entity.client.ClientArticle;
 import com.zenghui.easywrite.entity.client.ClientSwiper;

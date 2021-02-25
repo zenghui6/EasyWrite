@@ -31,4 +31,8 @@ public interface ComStaffService {
     String executeLogin(LoginDTO dto);
 
     ComStaff getUserByUsername(String username);
+
+    void updata(ComStaff comStaff);
+
+    void modify(String ids, String active);
 }

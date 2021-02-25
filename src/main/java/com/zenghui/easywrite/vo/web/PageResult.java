@@ -1,4 +1,4 @@
-package com.zenghui.easywrite.dto;
+package com.zenghui.easywrite.vo.web;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

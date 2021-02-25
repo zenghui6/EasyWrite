@@ -147,6 +147,11 @@ public class ComStaffServiceImpl implements ComStaffService {
         return comStaffDao.findByName(username);
     }
 
+    @Override
+    public void updata(ComStaff comStaff) {
+        comStaffDao.save(comStaff);
+    }
+
     /**
      * 通过nickname查找某一个用户
      * @param name
@@ -164,7 +169,6 @@ public class ComStaffServiceImpl implements ComStaffService {
     public void add(ComStaff account) {
         account.setCreateAt(new Date());
         account.setUpdateAt(new Date());
-        account.setPassword("123456");
         account.setId(snowflakeIdWorker.nextId());
         account.setCreateBy((String) session.getAttribute("user"));
         account.setUpdateBy((String) session.getAttribute("user"));
