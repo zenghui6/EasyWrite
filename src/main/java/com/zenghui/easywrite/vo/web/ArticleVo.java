@@ -26,6 +26,8 @@ public class ArticleVo{
 
     private String author;
 
+    private Integer readings;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createAt;
 

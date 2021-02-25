@@ -49,6 +49,7 @@ public interface ClientArticleDao extends JpaRepository<ClientArticle, String> {
             "a.title, " +
             "a.pic, " +
             "a.author, " +
+            "a.readings, " +
             "a.createAt ) " +
             "From ClientArticle  a " +
             "WHERE ( a.article LIKE %:#{#keywords}% OR a.title LIKE %:#{#keywords}% ) " +

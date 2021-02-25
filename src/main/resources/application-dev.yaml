@@ -75,5 +75,14 @@ spring:
 file:
   path: D:/upload/
 
+# 上传阿里OSS
+aliyun:
+  oss:
+    accessKeyId: LTAI4GBQwy2MBsSk7UJZozBf
+    accessKeySecret: tnR1v5si80V1ecSThld44TGbzJA9xs
+    endpoint: oss-cn-beijing.aliyuncs.com
+    bucketName: zenghuituku
+
+
 
 

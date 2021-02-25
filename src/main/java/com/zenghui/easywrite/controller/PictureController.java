@@ -1,5 +1,8 @@
 package com.zenghui.easywrite.controller;
 
+import com.aliyun.oss.OSSClient;
+import com.kuisama.oss.AliyunOssHandler;
+import com.kuisama.oss.properties.AliyunOssProperties;
 import com.zenghui.easywrite.common.api.ApiResult;
 import com.zenghui.easywrite.utils.SnowflakeIdWorker;
 import io.swagger.annotations.Api;
@@ -12,6 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author HUT-zenghui
@@ -25,10 +30,66 @@ public class PictureController {
     @Autowired
     private SnowflakeIdWorker snowflakeIdWorker;
 
+    @Autowired
+    private AliyunOssProperties aliyunOssProperties;
+    @Autowired
+    private OSSClient ossClient;
+
     @Value("${file.path}")
     private String filePath;
     // 上传的路径
 
+    /**-------------上传到阿里云OSS-----------------*/
+
+    /**
+     * 上传文件到OSS并返回URL
+     * @param file
+     * @return  https://zenghuituku.oss-cn-beijing.aliyuncs.com/note/image/1614244454251.png
+     */
+    @ApiOperation("上传")
+    @PostMapping("/OSSupload")
+    public String OSSupload(MultipartFile file) {
+        try {
+            // 文件名
+            String fileName = file.getOriginalFilename();
+            // 后缀名
+            assert fileName != null;
+            String suffixName = fileName.substring(fileName.lastIndexOf("."));
+            // 新文件名
+            fileName = snowflakeIdWorker.nextId() + suffixName;
+            String url = AliyunOssHandler.upload(ossClient, aliyunOssProperties, fileName, file.getInputStream());
+            System.out.println(url);
+            return url;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return e.getMessage();
+        }
+
+    }
+
+    @ApiOperation("文件删除")
+    @PostMapping("/OSSdel")
+    public void del(@RequestParam String fileName) {
+        try {
+            AliyunOssHandler.deleteFile(ossClient, aliyunOssProperties, fileName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @ApiOperation("批量文件删除")
+    @PostMapping("/OSSbathDel")
+    public List<String> bathDel(@RequestParam List<String> fileName) {
+        try {
+            List<String> keys = AliyunOssHandler.batchDeleteFile(ossClient, aliyunOssProperties, fileName);
+            return keys;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    /**---------<<<<下面是上传到本地----------------------*/
     @ApiOperation("上传图片专用接口")
     @PostMapping("/upload")
     @CrossOrigin
