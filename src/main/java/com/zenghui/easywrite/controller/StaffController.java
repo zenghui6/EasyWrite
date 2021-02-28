@@ -75,13 +75,17 @@ public class StaffController {
 
     @ApiOperation("文章的增加")
     @PostMapping("/article/add")
-    public ApiResult<String> articleAdd(@RequestBody ClientArticle article){
+    public ApiResult<String> articleAdd(@RequestBody ClientArticle article,@RequestHeader(value = "userName",defaultValue = "曾辉") String username){
+        String id;
+        if (!article.getId().equals("")) articleService.update(article);
         try{
-            String id = articleService.add(article);
+            article.setCreateBy(username);
+            article.setUpdateBy(username);
+            id = articleService.add(article);
         }catch (Exception e){
            return ApiResult.failed();
         }
-        return ApiResult.success("增加成功");
+        return ApiResult.success(id);
     }
 
     @ApiOperation("批量下架文章")

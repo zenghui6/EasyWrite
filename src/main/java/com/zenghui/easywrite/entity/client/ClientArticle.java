@@ -72,7 +72,7 @@ public class ClientArticle implements Serializable {
     @ApiModelProperty("创建时间")
     @Column(name = "create_at")
     @CreatedDate
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @JsonFormat(locale="zh", pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createAt;
 
     @ApiModelProperty("创建人员")

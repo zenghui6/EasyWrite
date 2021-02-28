@@ -47,11 +47,10 @@ public class ClientArticleServiceImpl implements ClientArticleService {
     @Override
     public String add(ClientArticle article){
 //        article.setCreateAt(new Date());
-//        article.setUpdateAt(new Date());
+        article.setUpdateAt(new Date());
         article.setId(snowflakeIdWorker.nextId());
         article.setIsDel(false);
-        article.setCreateBy((String) session.getAttribute("user"));
-        article.setUpdateBy((String) session.getAttribute("user"));
+        article.setStatus("draft");
         clientArticleDao.save(article);
         return article.getId();
     }

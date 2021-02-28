@@ -107,11 +107,12 @@ public interface ClientArticleDao extends JpaRepository<ClientArticle, String> {
      * ※审核方法
      *
      * 分页返回所有的文章条目
+     * 包含 draft, deleted, published
      * @param pageable
      * @param keywords
      * @return
      */
-    @Query(value = "select * from client_article where ( article LIKE %:#{#keywords}% OR title LIKE %:#{#keywords}% ) and status != 'draft'", nativeQuery = true)
+    @Query(value = "select * from client_article where ( article LIKE %:#{#keywords}% OR title LIKE %:#{#keywords}% )", nativeQuery = true)
     Page<ClientArticle> findAllExistArticle(String keywords, Pageable pageable);
 }
 
