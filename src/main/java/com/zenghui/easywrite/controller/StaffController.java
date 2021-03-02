@@ -73,54 +73,41 @@ public class StaffController {
 
     //    -----------以下为文章的增删改查----------
 
-    @ApiOperation("文章的增加")
+    @ApiOperation("文章的增加,或更新")
     @PostMapping("/article/add")
     public ApiResult<String> articleAdd(@RequestBody ClientArticle article,@RequestHeader(value = "userName",defaultValue = "曾辉") String username){
-        String id;
-        if (!article.getId().equals("")) articleService.update(article);
-        try{
-            article.setCreateBy(username);
-            article.setUpdateBy(username);
-            id = articleService.add(article);
-        }catch (Exception e){
-           return ApiResult.failed();
+        String id = "";
+        if (!article.getId().equals(""))
+            articleService.update(article,username);
+        else {
+            try{
+                article.setCreateBy(username);
+                article.setUpdateBy(username);
+                id = articleService.add(article);
+            }catch (Exception e){
+                return ApiResult.failed();
+            }
         }
         return ApiResult.success(id);
     }
 
-    @ApiOperation("批量下架文章")
-    @DeleteMapping("/article/delete/{ids}")
-    public ApiResult<String> articleDelete(@PathVariable("ids") String ids){
-        try{
-           articleService.delete(ids);
-        }catch (Exception e){
-            return ApiResult.failed();
-        }
-        return ApiResult.success("批量下架文章成功");
-    }
-
-    @ApiOperation("删除单篇文章")
-    @DeleteMapping("/article/delete_one/{id}")
-    public ApiResult<String> articleDeleteOne(@PathVariable("id") String id){
-        try{
-            articleService.deleteOne(id);
-        }catch (Exception e){
-            return ApiResult.failed();
-        }
-        return ApiResult.success();
-    }
-
     @ApiOperation("更新文章")
     @PutMapping("/article/update")
-    public ApiResult<String> articleUpdate(@RequestBody ClientArticle article) {
+    public ApiResult<String> articleUpdate(@RequestBody ClientArticle article,@RequestHeader(value = "userName",defaultValue = "曾辉") String username) {
         try{
-            articleService.update(article);
+            articleService.update(article,username);
         }catch (Exception e){
             return ApiResult.failed();
         }
-        return ApiResult.success();
+        return ApiResult.success("更新成功");
     }
 
+    /**
+     * 可以输入 keywords, status, sort 来查找，
+     * keywords, status可以全为空
+     * @param searchDto
+     * @return
+     */
     @ApiOperation("分页查找所有包含关键字的文章")
     @PostMapping("/article/find_all_by_keywords")
     public ApiResult<PageResult<ClientArticle>> articleFindAllByKeywords(@RequestBody SearchDto searchDto) {
@@ -129,12 +116,22 @@ public class StaffController {
         try {
             //这里不同于给客户端的，给员工的字段更多
             if (searchDto.getKeywords() == null || "".equals(searchDto.getKeywords())) {
-                page = articleService.staffFindAllByKeywords("", searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
-                // 当关键字为空时，查询所有
+                if (searchDto.getStatus() == null || "".equals(searchDto.getStatus())){
+                    // 当关键字,status为空时，查询所有
+                    page = articleService.staffFindAllByKeywords("", searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+                }else {
+                    page = articleService.staffFindAllByKeywordsAndStatus("", searchDto.getStatus(),searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+
+                }
             } else {
-                page = articleService.staffFindAllByKeywords(searchDto.getKeywords(), searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+                if (searchDto.getStatus() == null || "".equals(searchDto.getStatus())){
+                    // 当关键字,status为空时，查询所有
+                    page = articleService.staffFindAllByKeywords(searchDto.getKeywords(), searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+                }else {
+                    page = articleService.staffFindAllByKeywordsAndStatus(searchDto.getKeywords(), searchDto.getStatus(),searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+
+                }
             }
-            pageResult = new PageResult<>();
             pageResult.setSize(searchDto.getSize()).setPage(searchDto.getPage()).setData(page.getContent()).setTotal(page.getTotalElements());
         } catch (Exception e) {
            return ApiResult.failed();
@@ -158,36 +155,24 @@ public class StaffController {
 
     @ApiOperation("视频的添加")
     @PostMapping("/video/add")
-    public ApiResult<String> videoAdd(@RequestBody ClientVideo video){
-        try{
-            videoService.add(video);
-        }catch (Exception e){
-            ApiResult.failed();
+    public ApiResult<String> videoAdd(@RequestBody ClientVideo video ,@RequestHeader(value = "userName",defaultValue = "曾辉") String username){
+        String id = "";
+        if (!video.getId().equals("")) {
+            video.setUpdateBy(username);
+            videoService.update(video);
         }
-        return ApiResult.success();
+        else {
+            try{
+                video.setCreateBy(username);
+                video.setUpdateBy(username);
+                id = videoService.add(video);
+            }catch (Exception e){
+                return ApiResult.failed();
+            }
+        }
+        return ApiResult.success(id);
     }
 
-    @ApiOperation("视频的批量下架")
-    @DeleteMapping("/video/delete/{ids}")
-    public ApiResult<String> videoDelete(@PathVariable("ids") String ids) {
-        try{
-            videoService.delete(ids);
-        }catch (Exception e){
-            return ApiResult.failed();
-        }
-        return ApiResult.success();
-    }
-
-    @ApiOperation("删除单个视频")
-    @DeleteMapping("/video/delete_one/{id}")
-    public ApiResult<String> videoDeleteOne(@PathVariable("id") String id){
-        try{
-            videoService.deleteOne(id);
-        }catch (Exception e){
-            return ApiResult.failed();
-        }
-        return ApiResult.success();
-    }
 
     @ApiOperation("视频的更新")
     @PutMapping("/video/update")
@@ -200,19 +185,36 @@ public class StaffController {
         return ApiResult.success();
     }
 
+    /**
+     * 可以输入 keywords, status, sort 来查找，
+     * keywords, status可以全为空
+     * @param searchDto
+     * @return
+     */
     @ApiOperation("分页查找所有模糊查询的视频")
     @PostMapping("/video/find_all_by_keywords")
     public ApiResult<PageResult<ClientVideo>> videoFindAllByKeywords(@RequestBody SearchDto searchDto) {
         Page<ClientVideo> page;
-        PageResult<ClientVideo> pageResult;
+        PageResult<ClientVideo> pageResult = new PageResult<>();
         try {
+            //这里不同于给客户端的，给员工的字段更多
             if (searchDto.getKeywords() == null || "".equals(searchDto.getKeywords())) {
-                page = videoService.staffFindAllByKeywords("", searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
-                // 当关键字为空时，查询所有
+                if (searchDto.getStatus() == null || "".equals(searchDto.getStatus())){
+                    // 当关键字,status为空时，查询所有
+                    page = videoService.staffFindAllByKeywords("", searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+                }else {
+                    page = videoService.staffFindAllByKeywordsAndStatus("", searchDto.getStatus(),searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+
+                }
             } else {
-                page = videoService.staffFindAllByKeywords(searchDto.getKeywords(), searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+                if (searchDto.getStatus() == null || "".equals(searchDto.getStatus())){
+                    // 当关键字,status为空时，查询所有
+                    page = videoService.staffFindAllByKeywords(searchDto.getKeywords(), searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+                }else {
+                    page = videoService.staffFindAllByKeywordsAndStatus(searchDto.getKeywords(), searchDto.getStatus(),searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+
+                }
             }
-            pageResult = new PageResult<>();
             pageResult.setSize(searchDto.getSize()).setPage(searchDto.getPage()).setData(page.getContent()).setTotal(page.getTotalElements());
         } catch (Exception e) {
             return ApiResult.failed();

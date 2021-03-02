@@ -46,8 +46,8 @@ public class ClientVideo implements Serializable {
     private String videoTitle;
 
     @ApiModelProperty("视频介绍")
-    @Column(name = "vidoe_profile")
-    private String vidoeProfile;
+    @Column(name = "video_profile")
+    private String videoProfile;
 
     @ApiModelProperty("视频url")
     @Column(name = "video_url")

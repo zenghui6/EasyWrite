@@ -78,6 +78,9 @@ public interface ClientArticleDao extends JpaRepository<ClientArticle, String> {
     @Query(value = "select * from client_article WHERE article LIKE %:#{#keywords}% OR title LIKE %:#{#keywords}%", nativeQuery = true)
     Page<ClientArticle> staffFindArticleByKeywords(String keywords, Pageable pageable);
 
+    @Query(value = "select * from client_article WHERE (article LIKE %:#{#keywords}% OR title LIKE %:#{#keywords}% ) AND status = :#{#status}", nativeQuery = true)
+    Page<ClientArticle> staffFindArticleByKeywordsAndStatus(String keywords, Pageable pageable, String status);
+
     /**
      * ※审核方法：该方法与网络安全有关，与业务需求无关，未来迭代版本中使用
      *

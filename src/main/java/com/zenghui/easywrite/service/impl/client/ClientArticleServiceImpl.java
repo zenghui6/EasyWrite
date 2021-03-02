@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
@@ -40,7 +41,7 @@ public class ClientArticleServiceImpl implements ClientArticleService {
     /**
      * ※员工方法
      *
-     * 添加文章
+     * 添加文章草稿
      * @param article
      * @return 返回文章id
      */
@@ -130,6 +131,13 @@ public class ClientArticleServiceImpl implements ClientArticleService {
         return clientArticleDao.staffFindArticleByKeywords(keywords, pageable);
     }
 
+    @Override
+    public Page<ClientArticle> staffFindAllByKeywordsAndStatus(String keywords, String status, int page, int size, Sort.Direction direction) {
+        page--;
+        Pageable pageable = PageRequest.of(page, size, direction, "update_at");
+        return clientArticleDao.staffFindArticleByKeywordsAndStatus(keywords, pageable,status);
+    }
+
     /**
      * ※审核方法
      *
@@ -177,10 +185,10 @@ public class ClientArticleServiceImpl implements ClientArticleService {
      * @param article
      */
     @Override
-    public void update(ClientArticle article){
+    public void update(ClientArticle article,String username){
         ClientArticle articleTemp=clientArticleDao.findArticleById(article.getId());
         BeanUtils.copyProperties(article, articleTemp);
-        articleTemp.setUpdateBy((String) session.getAttribute("user"));
+        articleTemp.setUpdateBy(username);
         articleTemp.setUpdateAt(new Date());
         clientArticleDao.saveAndFlush(articleTemp);
     }

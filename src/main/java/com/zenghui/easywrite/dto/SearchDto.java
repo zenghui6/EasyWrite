@@ -11,5 +11,6 @@ public class SearchDto {
     private int page;
     private int size;
     private String keywords;
+    private String status;
     private Sort.Direction direction;
 }

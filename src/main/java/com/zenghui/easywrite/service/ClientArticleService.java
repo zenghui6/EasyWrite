@@ -7,6 +7,7 @@ import java.util.List;
 import com.zenghui.easywrite.vo.web.ArticleVo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 /**
  * (ClientArticle)表服务接口
@@ -59,6 +60,8 @@ public interface ClientArticleService {
      */
     Page<ClientArticle> staffFindAllByKeywords(String keywords, int page, int size, Sort.Direction direction);
 
+    Page<ClientArticle> staffFindAllByKeywordsAndStatus(String keywords, String status,int page, int size, Sort.Direction direction);
+
     /**
      * ※审核方法
      *
@@ -90,6 +93,6 @@ public interface ClientArticleService {
      * 更新文章
      * @param article
      */
-    void update(ClientArticle article);
+    void update(ClientArticle article,String username);
 
 }

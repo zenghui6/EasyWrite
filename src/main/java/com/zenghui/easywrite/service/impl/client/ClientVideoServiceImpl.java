@@ -1,5 +1,6 @@
 package com.zenghui.easywrite.service.impl.client;
 
+import com.zenghui.easywrite.entity.client.ClientArticle;
 import com.zenghui.easywrite.entity.client.ClientVideo;
 import com.zenghui.easywrite.dao.client.ClientVideoDao;
 import com.zenghui.easywrite.service.ClientVideoService;
@@ -46,18 +47,19 @@ public class ClientVideoServiceImpl implements ClientVideoService {
     }
 
     /**
-     * 添加视频
+     * 添加视频草稿
      * @param video
+     * @return
      */
-    public void add(ClientVideo video){
+    public String add(ClientVideo video){
         video.setVideoDate(new Date());
         video.setCreateAt(new Date());
         video.setUpdateAt(new Date());
-        video.setUpdateBy((String) session.getAttribute("user"));
-        video.setCreateBy((String) session.getAttribute("user"));
         video.setId(snowflakeIdWorker.nextId());
+        video.setVideoStatus("draft");
         video.setIsDel(false);
         clientVideoDao.save(video);
+        return video.getId();
     }
 
     /**
@@ -85,6 +87,13 @@ public class ClientVideoServiceImpl implements ClientVideoService {
         page--;
         Pageable pageable = PageRequest.of(page, size, direction, "update_at");
         return clientVideoDao.staffFindVideoByKeywords(keywords,pageable);
+    }
+
+    @Override
+    public Page<ClientVideo> staffFindAllByKeywordsAndStatus(String keywords, String status, int page, int size, Sort.Direction direction) {
+        page--;
+        Pageable pageable = PageRequest.of(page, size, direction, "update_at");
+        return clientVideoDao.staffFindVideoByKeywordsAndStatus(keywords, pageable,status);
     }
 
     /**

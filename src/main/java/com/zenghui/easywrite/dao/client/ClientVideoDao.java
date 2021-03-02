@@ -1,5 +1,6 @@
 package com.zenghui.easywrite.dao.client;
 
+import com.zenghui.easywrite.entity.client.ClientArticle;
 import com.zenghui.easywrite.entity.client.ClientVideo;
 
 import org.springframework.data.domain.Page;
@@ -52,6 +53,8 @@ public interface ClientVideoDao extends JpaRepository<ClientVideo, String> {
     @Query(value = "select * from client_video WHERE video_title LIKE %:#{#keywords}% OR video_profile LIKE %:#{#keywords}%", nativeQuery = true)
     Page<ClientVideo> staffFindVideoByKeywords(String keywords, Pageable pageable);
 
+    @Query(value = "select * from client_video WHERE (video_title LIKE %:#{#keywords}% OR video_profile LIKE %:#{#keywords}%) AND video_status = :#{#status}", nativeQuery = true)
+    Page<ClientVideo> staffFindVideoByKeywordsAndStatus(String keywords, Pageable pageable, String status);
     /**
      * ※审核方法：该方法与网络安全有关，与业务需求无关，未来迭代版本中使用
      *

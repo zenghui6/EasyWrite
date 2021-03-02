@@ -16,7 +16,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author HUT-zenghui
@@ -48,7 +50,7 @@ public class PictureController {
      */
     @ApiOperation("上传")
     @PostMapping("/OSSupload")
-    public String OSSupload(MultipartFile file) {
+    public ApiResult OSSupload(MultipartFile file) {
         try {
             // 文件名
             String fileName = file.getOriginalFilename();
@@ -59,22 +61,27 @@ public class PictureController {
             fileName = snowflakeIdWorker.nextId() + suffixName;
             String url = AliyunOssHandler.upload(ossClient, aliyunOssProperties, fileName, file.getInputStream());
             System.out.println(url);
-            return url;
+            Map<String,String> data = new HashMap<>();
+            data.put("url",url);
+            return ApiResult.success(data);
         } catch (Exception e) {
             e.printStackTrace();
-            return e.getMessage();
+            return ApiResult.failed(e.getMessage());
         }
 
     }
 
     @ApiOperation("文件删除")
-    @PostMapping("/OSSdel")
-    public void del(@RequestParam String fileName) {
+    @PostMapping("/OSSdel/{fileName}")
+    public ApiResult del(@PathVariable(value = "fileName") String fileName) {
+        System.out.println(fileName);
         try {
             AliyunOssHandler.deleteFile(ossClient, aliyunOssProperties, fileName);
+            return ApiResult.success("删除成功");
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return ApiResult.failed("删除失败");
     }
 
     @ApiOperation("批量文件删除")
