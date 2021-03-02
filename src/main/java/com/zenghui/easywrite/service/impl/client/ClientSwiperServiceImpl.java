@@ -164,4 +164,11 @@ public class ClientSwiperServiceImpl implements ClientSwiperService {
         Pageable pageable=PageRequest.of(page,size, direction, "create_at");
         return clientSwiperDao.findAllExistSwiper(keywords, pageable);
     }
+
+    @Override
+    public Page<ClientSwiper> staffFindAllByKeywordsAndStatus(String keywords, String status, int page, int size, Sort.Direction direction) {
+        page--;
+        Pageable pageable = PageRequest.of(page, size, direction, "update_at");
+        return clientSwiperDao.staffFindSwiperByKeywordsAndStatus(keywords, pageable,status);
+    }
 }

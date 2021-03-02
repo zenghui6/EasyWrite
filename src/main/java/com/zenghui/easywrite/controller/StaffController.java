@@ -156,12 +156,7 @@ public class StaffController {
     @ApiOperation("视频的添加")
     @PostMapping("/video/add")
     public ApiResult<String> videoAdd(@RequestBody ClientVideo video ,@RequestHeader(value = "userName",defaultValue = "曾辉") String username){
-        String id = "";
-        if (!video.getId().equals("")) {
-            video.setUpdateBy(username);
-            videoService.update(video);
-        }
-        else {
+            String id = "";
             try{
                 video.setCreateBy(username);
                 video.setUpdateBy(username);
@@ -169,15 +164,17 @@ public class StaffController {
             }catch (Exception e){
                 return ApiResult.failed();
             }
-        }
         return ApiResult.success(id);
     }
 
 
     @ApiOperation("视频的更新")
     @PutMapping("/video/update")
-    public ApiResult<String> videoUpdate(@RequestBody ClientVideo video){
+    public ApiResult<String> videoUpdate(@RequestBody ClientVideo video,@RequestHeader(value = "userName",defaultValue = "曾辉") String username){
+        System.out.println(username);
         try{
+            video.setCreateBy(username);
+            video.setUpdateBy(username);
             videoService.update(video);
         }catch (Exception e){
             return ApiResult.failed();
@@ -299,27 +296,36 @@ public class StaffController {
         return ApiResult.success();
     }
 
-//    @ApiOperation("分页查找所有模糊查询的")
-//    @PostMapping("/web_swiper/find_all_by_keywords")
-//    public Result<PageResult<Swiper>> webSwiperFindAllByKeywords(@RequestBody SearchDto searchDto) {
-//        Result<PageResult<Swiper>> result = new Result<>();
-//        Page<Swiper> page;
-//        try {
-//            if (searchDto.getKeywords() == null || searchDto.getKeywords().equals("")) {
-//                page = swiperService.staffFindAllByKeywords("", searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
-//                // 当关键字为空时，查询所有
-//            } else {
-//                page = swiperService.staffFindAllByKeywords(searchDto.getKeywords(), searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
-//            }
-//            PageResult<Swiper> pageResult = new PageResult<>();
-//            pageResult.setSize(searchDto.getSize()).setPage(searchDto.getPage()).setData(page.getContent()).setTotal(page.getTotalElements());
-//            result.setMessage("success").setCode(HttpStatus.OK).setData(pageResult);
-//        } catch (Exception e) {
-//            result.setMessage("fail").setCode(HttpStatus.OK).setData(null);
-//        }
-//
-//        return result;
-//    }
+    @ApiOperation("分页查找所有模糊查询的")
+    @PostMapping("/web_swiper/find_all_by_keywords")
+    public ApiResult<PageResult<ClientSwiper>> swiperFindAllByKeywords(@RequestBody SearchDto searchDto) {
+        Page<ClientSwiper> page;
+        PageResult<ClientSwiper> pageResult = new PageResult<>();
+        try {
+            //这里不同于给客户端的，给员工的字段更多
+            if (searchDto.getKeywords() == null || "".equals(searchDto.getKeywords())) {
+                if (searchDto.getStatus() == null || "".equals(searchDto.getStatus())){
+                    // 当关键字,status为空时，查询所有
+                    page = swiperService.staffFindAllByKeywords("", searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+                }else {
+                    page = swiperService.staffFindAllByKeywordsAndStatus("", searchDto.getStatus(),searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+
+                }
+            } else {
+                if (searchDto.getStatus() == null || "".equals(searchDto.getStatus())){
+                    // 当关键字,status为空时，查询所有
+                    page = swiperService.staffFindAllByKeywords(searchDto.getKeywords(), searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+                }else {
+                    page = swiperService.staffFindAllByKeywordsAndStatus(searchDto.getKeywords(), searchDto.getStatus(),searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+
+                }
+            }
+            pageResult.setSize(searchDto.getSize()).setPage(searchDto.getPage()).setData(page.getContent()).setTotal(page.getTotalElements());
+        } catch (Exception e) {
+            return ApiResult.failed();
+        }
+        return ApiResult.success(pageResult);
+    }
 
     @ApiOperation("获取某一个轮播图")
     @GetMapping("/web_swiper/find_one_by_id/{id}")

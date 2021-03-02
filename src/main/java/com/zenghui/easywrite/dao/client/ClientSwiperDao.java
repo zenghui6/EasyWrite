@@ -94,5 +94,8 @@ public interface ClientSwiperDao extends JpaRepository<ClientSwiper, String> {
      */
     @Query(value = "select * from client_swiper where ( swiper_name LIKE %:#{#keywords}% ) and swiper_status != 'draft'", nativeQuery = true)
     Page<ClientSwiper> findAllExistSwiper(String keywords, Pageable pageable);
+
+    @Query(value = "select * from client_swiper where ( swiper_name LIKE %:#{#keywords}% ) and swiper_status != :#{#status}", nativeQuery = true)
+    Page<ClientSwiper> staffFindSwiperByKeywordsAndStatus(String keywords, Pageable pageable, String status);
 }
 
