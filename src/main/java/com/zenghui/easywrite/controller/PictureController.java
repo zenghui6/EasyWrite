@@ -50,7 +50,7 @@ public class PictureController {
      */
     @ApiOperation("上传")
     @PostMapping("/OSSupload")
-    public ApiResult OSSupload(MultipartFile file) {
+    public ApiResult<Object> OSSupload(MultipartFile file) {
         try {
             // 文件名
             String fileName = file.getOriginalFilename();
@@ -73,7 +73,7 @@ public class PictureController {
 
     @ApiOperation("文件删除")
     @PostMapping("/OSSdel/{fileName}")
-    public ApiResult del(@PathVariable(value = "fileName") String fileName) {
+    public ApiResult<String> del(@PathVariable(value = "fileName") String fileName) {
         System.out.println(fileName);
         try {
             AliyunOssHandler.deleteFile(ossClient, aliyunOssProperties, fileName);
