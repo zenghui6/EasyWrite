@@ -13,4 +13,5 @@ public class AdminSearchDto {
     private String keywords;
     private Sort.Direction direction;
     private String active;
+    private String level;
 }

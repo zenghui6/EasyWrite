@@ -61,7 +61,7 @@ public class StaffController {
     }
 
     @ApiOperation(value = "修改员工信息")
-    @PostMapping("/account/update")
+    @PutMapping("/account/update")
     public ApiResult<String> updateStaffInfo(@RequestBody ComStaff account) {
         try {
             accountService.updata(account);

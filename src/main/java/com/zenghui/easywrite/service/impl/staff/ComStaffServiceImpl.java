@@ -74,11 +74,19 @@ public class ComStaffServiceImpl implements ComStaffService {
      * @param direction
      * @return
      */
-    public Page<ComStaff> findAllByKeywords(String keywords, String active, int page, int size, Sort.Direction direction){
+    public Page<ComStaff> findAllByKeywords(String keywords, int page, int size, Sort.Direction direction){
         page--;
         Pageable pageable = PageRequest.of(page, size, direction, "update_at");
-        Boolean activeTemp = Boolean.parseBoolean(active);
-        return comStaffDao.findAccountByKeywords(keywords, activeTemp, pageable);
+//        Boolean activeTemp = Boolean.parseBoolean(active);
+        return comStaffDao.findAccountByKeywords(keywords, pageable);
+    }
+
+    @Override
+    public Page<ComStaff> findAllByKeywordsAndLevel(String keywords, String level, int page, int size, Sort.Direction direction) {
+        page--;
+        Pageable pageable = PageRequest.of(page, size, direction, "update_at");
+//        Boolean activeTemp = Boolean.parseBoolean(active);
+        return comStaffDao.findAccountByKeywordsAndLevel(keywords,level, pageable);
     }
 
     /**

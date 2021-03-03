@@ -2,6 +2,7 @@ package com.zenghui.easywrite.controller;
 
 import com.zenghui.easywrite.common.api.ApiResult;
 import com.zenghui.easywrite.dto.AdminSearchDto;
+import com.zenghui.easywrite.dto.RegisterDTO;
 import com.zenghui.easywrite.entity.client.ClientArticle;
 import com.zenghui.easywrite.entity.client.ClientSwiper;
 import com.zenghui.easywrite.entity.client.ClientVideo;
@@ -15,7 +16,13 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
+import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Noah
@@ -31,6 +38,9 @@ public class AdminController {
 
     @Autowired
     private ClientArticleService articleService;
+
+    @Resource
+    private ComStaffService comStaffService;
 
     @Autowired
     private ClientVideoService videoService;
@@ -81,15 +91,23 @@ public class AdminController {
 
     @ApiOperation("分页查找所有模糊查询的员工，接收按时间正逆排序、是否下架")
     @PostMapping("/find_all_by_keywords")
-    public ApiResult<PageResult<ComStaff>> findAll(@RequestBody AdminSearchDto searchDto) {
+    public ApiResult<PageResult<ComStaff>> AccountFindAllByKeywordsAndLevel(@RequestBody AdminSearchDto searchDto) {
         Page<ComStaff> page;
         PageResult<ComStaff> pageResult;
         try {
             if (searchDto.getKeywords() == null || "".equals(searchDto.getKeywords())) {
-                page = accountService.findAllByKeywords("", searchDto.getActive(), searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
-                // 当关键字为空时，查询所有
+                if (searchDto.getLevel() == null || "".equals(searchDto.getLevel())) {
+                    page = accountService.findAllByKeywords("", searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+                    // 当关键字为空时，查询所有
+                }else {
+                    page = accountService.findAllByKeywordsAndLevel("",searchDto.getLevel(), searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+                }
             } else {
-                page = accountService.findAllByKeywords(searchDto.getKeywords(), searchDto.getActive(), searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+                if (searchDto.getLevel() == null || "".equals(searchDto.getLevel())) {
+                    page = accountService.findAllByKeywords(searchDto.getKeywords(), searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+                }else {
+                    page = accountService.findAllByKeywordsAndLevel(searchDto.getKeywords(),searchDto.getLevel(), searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+                }
             }
             pageResult = new PageResult<>();
             pageResult.setSize(searchDto.getSize()).setPage(searchDto.getPage()).setData(page.getContent()).setTotal(page.getTotalElements());
@@ -111,15 +129,22 @@ public class AdminController {
         return ApiResult.success(account);
     }
 
-    @ApiOperation(value = "增加员工")
+    /**
+     * 管理员添加 staff 员工的接口,管理员账户必须要提权
+     * @param dto
+     * @return
+     */
+    @ApiOperation(value = "注册普通员工")
     @PostMapping("/add")
-    public ApiResult<String> add(@RequestBody ComStaff account) {
-        try {
-            accountService.add(account);
-        } catch (Exception e) {
-            return ApiResult.failed();
+    public ApiResult<Map<String, Object>> register(@Valid @RequestBody RegisterDTO dto) {
+        System.out.println(dto);
+        ComStaff user = comStaffService.executeRegister(dto);
+        if (ObjectUtils.isEmpty(user)) {
+            return ApiResult.failed("账号注册失败");
         }
-        return ApiResult.success();
+        Map<String, Object> map = new HashMap<>(16);
+        map.put("user", user);
+        return ApiResult.success(map);
     }
 
     /**

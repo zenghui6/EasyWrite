@@ -19,5 +19,6 @@ public class RegisterDTO {
     private String pass;
 
     @NotEmpty(message = "请输入昵称")
+    @Length(min = 2, max = 15, message = "长度在2-15")
     private String nickName;
 }

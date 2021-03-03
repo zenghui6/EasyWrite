@@ -75,13 +75,15 @@ public interface ComStaffDao extends JpaRepository<ComStaff, String> {
     Page<ComStaff> findAllDeletedAccount(Pageable pageable);
 
     /**
-     * 根据关键词、存在状态查询
+     * 根据关键词、存在状态查询,不论是否删除
      * @param keywords
-     * @param active
      * @param pageable
      * @return
      */
-    @Query(value = "select * from com_staff WHERE ( name LIKE %:#{#keywords}% OR nickname LIKE %:#{#keywords}% ) AND is_del = :active ", nativeQuery = true)
-    Page<ComStaff> findAccountByKeywords(String keywords, Boolean active, Pageable pageable);
+    @Query(value = "select * from com_staff WHERE  name LIKE %:#{#keywords}% OR nickname LIKE %:#{#keywords}% ", nativeQuery = true)
+    Page<ComStaff> findAccountByKeywords(String keywords,  Pageable pageable);
+
+    @Query(value = "select * from com_staff WHERE  (name LIKE %:#{#keywords}% OR nickname LIKE %:#{#keywords}%) AND level = :#{#level} ", nativeQuery = true)
+    Page<ComStaff> findAccountByKeywordsAndLevel(String keywords, String level, Pageable pageable);
 }
 

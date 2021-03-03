@@ -22,7 +22,7 @@ public interface ComStaffService {
 
     Page<ComStaff> findAllDeleted(int page,int size);
 
-    Page<ComStaff> findAllByKeywords(String keywords, String active, int page, int size, Sort.Direction direction);
+    Page<ComStaff> findAllByKeywords(String keywords, int page, int size, Sort.Direction direction);
 
     ComStaff findOneById(String id);
 
@@ -35,4 +35,6 @@ public interface ComStaffService {
     void updata(ComStaff comStaff);
 
     void modify(String ids, String active);
+
+    Page<ComStaff> findAllByKeywordsAndLevel(String keywords, String level, int page, int size, Sort.Direction direction);
 }

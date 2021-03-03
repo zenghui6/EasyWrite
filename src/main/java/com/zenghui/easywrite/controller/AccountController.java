@@ -27,18 +27,6 @@ public class AccountController {
     private static final String STAFF = "2";
     private static final String ADMIN = "1";
 
-    @PostMapping("/register")
-    public ApiResult<Map<String, Object>> register(@Valid @RequestBody RegisterDTO dto) {
-        System.out.println(dto);
-        ComStaff user = comStaffService.executeRegister(dto);
-        if (ObjectUtils.isEmpty(user)) {
-            return ApiResult.failed("账号注册失败");
-        }
-        Map<String, Object> map = new HashMap<>(16);
-        map.put("user", user);
-        return ApiResult.success(map);
-    }
-
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ApiResult<Map<String, String>> login(@Valid @RequestBody LoginDTO dto) {
         String token = comStaffService.executeLogin(dto);
