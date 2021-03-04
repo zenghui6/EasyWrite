@@ -24,7 +24,7 @@ public interface ClientSwiperService {
     List<ClientSwiper> clientFindAllExist();
     ClientSwiper findOneById(String id);
     void update(ClientSwiper swiper);
-    Page<ClientSwiper> findAllClass(String keywords, int page,int size, String active, Sort.Direction direction);
+    Page<ClientSwiper> findAllClass(String keywords, int page,int size, Sort.Direction direction);
     Page<ClientSwiper> findAllExist(String keywords, int page,int size, Sort.Direction direction);
 
     Page<ClientSwiper> staffFindAllByKeywordsAndStatus(String keywords, String status, int page, int size, Sort.Direction direction);

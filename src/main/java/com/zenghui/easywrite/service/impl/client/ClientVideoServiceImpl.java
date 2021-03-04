@@ -102,11 +102,10 @@ public class ClientVideoServiceImpl implements ClientVideoService {
      * @param size
      * @return
      */
-    public Page<ClientVideo> findAllClass(String keywords, int page,int size, String active, Sort.Direction direction){
+    public Page<ClientVideo> findAllClass(String keywords, int page,int size,  Sort.Direction direction){
         page--;
         Pageable pageable = PageRequest.of(page,size, direction, "create_at");
-        Boolean activeTemp = Boolean.parseBoolean(active);
-        return clientVideoDao.findAllClassVideo(keywords, pageable, activeTemp);
+        return clientVideoDao.findAllClassVideo(keywords, pageable);
     }
 
     /**

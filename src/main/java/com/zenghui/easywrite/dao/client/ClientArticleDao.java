@@ -97,14 +97,15 @@ public interface ClientArticleDao extends JpaRepository<ClientArticle, String> {
     /**
      * ※审核方法
      *
-     * 分页按条件分类查找删除与否的文章
+     * 分页按条件分类查找 wait 和 reviewed 和 public
+     * 已删除的和草稿不显示在这
      * @param pageable
-     * @param active
      * @param keywords
      * @return
      */
-    @Query(value = "select * from client_article where ( article LIKE %:#{#keywords}% OR title LIKE %:#{#keywords}% ) and is_del = :active and status != 'draft'", nativeQuery = true)
-    Page<ClientArticle> findAllClassArticle(String keywords, Pageable pageable, Boolean active);
+    @Query(value = "select * from client_article where ( article LIKE %:#{#keywords}% OR title LIKE %:#{#keywords}% )  AND status != 'draft' and status != 'deleted'", nativeQuery = true)
+    Page<ClientArticle> findAllClassArticle(String keywords, Pageable pageable);
+
 
     /**
      * ※审核方法
@@ -117,5 +118,6 @@ public interface ClientArticleDao extends JpaRepository<ClientArticle, String> {
      */
     @Query(value = "select * from client_article where ( article LIKE %:#{#keywords}% OR title LIKE %:#{#keywords}% )", nativeQuery = true)
     Page<ClientArticle> findAllExistArticle(String keywords, Pageable pageable);
+
 }
 

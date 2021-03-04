@@ -23,6 +23,6 @@ public interface ClientVideoService {
 
     Page<ClientVideo> staffFindAllByKeywordsAndStatus(String keywords, String status, int page, int size, Sort.Direction direction);
 
-    Page<ClientVideo> findAllClass(String keywords, int page, int size, String active, Sort.Direction direction);
+    Page<ClientVideo> findAllClass(String keywords, int page, int size,  Sort.Direction direction);
     Page<ClientVideo> findAllExist(String keywords, int page,int size, Sort.Direction direction);
 }

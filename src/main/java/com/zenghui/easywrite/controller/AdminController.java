@@ -3,6 +3,7 @@ package com.zenghui.easywrite.controller;
 import com.zenghui.easywrite.common.api.ApiResult;
 import com.zenghui.easywrite.dto.AdminSearchDto;
 import com.zenghui.easywrite.dto.RegisterDTO;
+import com.zenghui.easywrite.dto.SearchDto;
 import com.zenghui.easywrite.entity.client.ClientArticle;
 import com.zenghui.easywrite.entity.client.ClientSwiper;
 import com.zenghui.easywrite.entity.client.ClientVideo;
@@ -167,37 +168,24 @@ public class AdminController {
 
     @ApiOperation("分页按条件分类查找删除与否的文章")
     @PostMapping("/article/find_all_class")
-    public ApiResult<PageResult<ClientArticle>> articleFindAllClass(@RequestBody AdminSearchDto searchDto)
+    public ApiResult<PageResult<ClientArticle>> articleFindAllClass(@RequestBody SearchDto searchDto)
     {
         Page<ClientArticle> pageTemp;
         PageResult<ClientArticle> pageResult;
         try {
             if(searchDto.getKeywords() == null || "".equals(searchDto.getKeywords())){
-                pageTemp = articleService.findAllClass("", searchDto.getPage(), searchDto.getSize(), searchDto.getActive(), searchDto.getDirection());
+                if (searchDto.getStatus() == null || "".equals(searchDto.getStatus())) {
+                    pageTemp = articleService.findAllClass("", searchDto.getPage(), searchDto.getSize(),  searchDto.getDirection());
+                }else {
+                    pageTemp = articleService.staffFindAllByKeywordsAndStatus("",searchDto.getStatus(), searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+                }
             }
             else{
-                pageTemp = articleService.findAllClass(searchDto.getKeywords(), searchDto.getPage(), searchDto.getSize(), searchDto.getActive(), searchDto.getDirection());
-            }
-            pageResult = new PageResult<>();
-            pageResult.setTotal(pageTemp.getTotalElements()).setData(pageTemp.getContent()).setPage(searchDto.getPage()).setSize(searchDto.getSize());
-        } catch (Exception e) {
-            return ApiResult.failed();
-        }
-        return ApiResult.success(pageResult);
-    }
-
-    @ApiOperation("分页查找所有的文章")
-    @PostMapping("/article/find_all")
-    public ApiResult<PageResult<ClientArticle>> articleFindAllExist(@RequestBody AdminSearchDto searchDto)
-    {
-        Page<ClientArticle> pageTemp;
-        PageResult<ClientArticle> pageResult;
-        try {
-            if(searchDto.getKeywords() == null || "".equals(searchDto.getKeywords())){
-                pageTemp = articleService.findAllExist("", searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
-            }
-            else{
-                pageTemp = articleService.findAllExist(searchDto.getKeywords(), searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+                if (searchDto.getStatus() == null || "".equals(searchDto.getStatus())) {
+                    pageTemp = articleService.findAllClass(searchDto.getKeywords(), searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+                }else {
+                    pageTemp = articleService.staffFindAllByKeywordsAndStatus(searchDto.getKeywords(),searchDto.getStatus(), searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+                }
             }
             pageResult = new PageResult<>();
             pageResult.setTotal(pageTemp.getTotalElements()).setData(pageTemp.getContent()).setPage(searchDto.getPage()).setSize(searchDto.getSize());
@@ -211,15 +199,24 @@ public class AdminController {
 
     @ApiOperation("分页分类查找所有视频")
     @PostMapping("/video/find_all_class")
-    public ApiResult<PageResult<ClientVideo>> videoFindAllClass(@RequestBody AdminSearchDto searchDto){
+    public ApiResult<PageResult<ClientVideo>> videoFindAllClass(@RequestBody SearchDto searchDto){
         Page<ClientVideo> pageTemp;
         PageResult<ClientVideo> pageResult;
         try {
             if (searchDto.getKeywords() == null || "".equals(searchDto.getKeywords())) {
-                pageTemp = videoService.findAllClass("", searchDto.getPage(), searchDto.getSize(), searchDto.getActive(), searchDto.getDirection());
+                if (searchDto.getStatus() == null || "".equals(searchDto.getStatus())) {
+                    pageTemp = videoService.findAllClass("", searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+                }else {
+                    pageTemp = videoService.staffFindAllByKeywordsAndStatus("",searchDto.getStatus(), searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+                }
             }
             else{
-                pageTemp = videoService.findAllClass(searchDto.getKeywords(), searchDto.getPage(), searchDto.getSize(), searchDto.getActive(), searchDto.getDirection());
+                if (searchDto.getStatus() == null || "".equals(searchDto.getStatus())) {
+                    pageTemp = videoService.findAllClass(searchDto.getKeywords(), searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+                }else {
+                    pageTemp = videoService.staffFindAllByKeywordsAndStatus("",searchDto.getStatus(), searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+
+                }
             }
             pageResult = new PageResult<>();
             pageResult.setTotal(pageTemp.getTotalElements()).setData(pageTemp.getContent()).setPage(searchDto.getPage()).setSize(searchDto.getSize());
@@ -229,39 +226,30 @@ public class AdminController {
         return ApiResult.success(pageResult);
     }
 
-    @ApiOperation("分页查找所有未被删除的视频")
-    @PostMapping("/video/find_all")
-    public ApiResult<PageResult<ClientVideo>> videoFindAllExist(@RequestBody AdminSearchDto searchDto){
-        Page<ClientVideo> pageTemp;
-        PageResult<ClientVideo> pageResult;
-        try {
-            if (searchDto.getKeywords() == null || "".equals(searchDto.getKeywords())) {
-                pageTemp = videoService.findAllExist("", searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
-            }
-            else{
-                pageTemp = videoService.findAllExist(searchDto.getKeywords(), searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
-            }
-            pageResult = new PageResult<>();
-            pageResult.setTotal(pageTemp.getTotalElements()).setData(pageTemp.getContent()).setPage(searchDto.getPage()).setSize(searchDto.getSize());
-        } catch (Exception e) {
-            return ApiResult.failed();
-        }
-        return ApiResult.success(pageResult);
-    }
 
     //    -----------以下为轮播图审核的相关方法----------
 
     @ApiOperation("分页分类查找所有轮播图")
     @PostMapping("/swiper/find_all_class")
-    public ApiResult<PageResult<ClientSwiper>> swiperFindAllClass(@RequestBody AdminSearchDto searchDto){
+    public ApiResult<PageResult<ClientSwiper>> swiperFindAllClass(@RequestBody SearchDto searchDto){
         Page<ClientSwiper> pageTemp;
         PageResult<ClientSwiper> pageResult;
         try {
             if (searchDto.getKeywords() == null || "".equals(searchDto.getKeywords())) {
-                pageTemp = swiperService.findAllClass("", searchDto.getPage(), searchDto.getSize(), searchDto.getActive(), searchDto.getDirection());
+                if (searchDto.getStatus() == null || "".equals(searchDto.getStatus())) {
+                    pageTemp = swiperService.findAllClass("", searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+                }else {
+                    pageTemp = swiperService.staffFindAllByKeywordsAndStatus("", searchDto.getStatus(),searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+
+                }
             }
             else{
-                pageTemp = swiperService.findAllClass(searchDto.getKeywords(), searchDto.getPage(), searchDto.getSize(), searchDto.getActive(), searchDto.getDirection());
+                if (searchDto.getStatus() == null || "".equals(searchDto.getStatus())) {
+                    pageTemp = swiperService.findAllClass(searchDto.getKeywords(), searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+                }else {
+                    pageTemp = swiperService.staffFindAllByKeywordsAndStatus(searchDto.getKeywords(), searchDto.getStatus(),searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+
+                }
             }
             pageResult = new PageResult<>();
             pageResult.setTotal(pageTemp.getTotalElements()).setData(pageTemp.getContent()).setPage(searchDto.getPage()).setSize(searchDto.getSize());

@@ -114,6 +114,8 @@ public class ClientArticleServiceImpl implements ClientArticleService {
         return clientArticleDao.findArticleByKeywords(keywords,pageable);
     }
 
+
+
     /**
      * ※员工方法
      *
@@ -147,11 +149,10 @@ public class ClientArticleServiceImpl implements ClientArticleService {
      * @return
      */
     @Override
-    public Page<ClientArticle> findAllClass(String keywords, int page,int size, String active, Sort.Direction direction){
+    public Page<ClientArticle> findAllClass(String keywords, int page,int size,  Sort.Direction direction){
         page--;
         Pageable pageable=PageRequest.of(page,size, direction, "create_at");
-        Boolean activeTemp = Boolean.parseBoolean(active);
-        return clientArticleDao.findAllClassArticle(keywords, pageable, activeTemp);
+        return clientArticleDao.findAllClassArticle(keywords, pageable);
     }
 
     /**

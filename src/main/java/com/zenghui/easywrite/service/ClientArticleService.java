@@ -70,7 +70,7 @@ public interface ClientArticleService {
      * @param size
      * @return
      */
-    Page<ClientArticle> findAllClass(String keywords, int page,int size, String active, Sort.Direction direction);
+    Page<ClientArticle> findAllClass(String keywords, int page,int size,  Sort.Direction direction);
 
     /**
      * ※审核方法

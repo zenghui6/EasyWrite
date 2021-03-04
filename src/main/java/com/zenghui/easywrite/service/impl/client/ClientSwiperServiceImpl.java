@@ -144,11 +144,10 @@ public class ClientSwiperServiceImpl implements ClientSwiperService {
      * @param size
      * @return
      */
-    public Page<ClientSwiper> findAllClass(String keywords, int page,int size, String active, Sort.Direction direction){
+    public Page<ClientSwiper> findAllClass(String keywords, int page,int size,  Sort.Direction direction){
         page--;
         Pageable pageable=PageRequest.of(page,size, direction, "create_at");
-        Boolean activeTemp = Boolean.parseBoolean(active);
-        return clientSwiperDao.findAllClassSwiper(keywords, pageable, activeTemp);
+        return clientSwiperDao.findAllClassSwiper(keywords, pageable);
     }
 
     /**

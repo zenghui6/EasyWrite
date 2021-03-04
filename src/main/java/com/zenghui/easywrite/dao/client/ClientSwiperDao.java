@@ -75,14 +75,14 @@ public interface ClientSwiperDao extends JpaRepository<ClientSwiper, String> {
     /**
      * ※审核方法
      *
-     * 分页按条件分类查找删除与否的文章
+     * 分页按条件分类
+     * 关键字， 待审的，上架的，审核的
      * @param pageable
-     * @param active
      * @param keywords
      * @return
      */
-    @Query(value = "select * from client_swiper where ( swiper_name LIKE %:#{#keywords}% ) and is_del = :active and swiper_status != 'draft'", nativeQuery = true)
-    Page<ClientSwiper> findAllClassSwiper(String keywords, Pageable pageable, Boolean active);
+    @Query(value = "select * from client_swiper where ( swiper_name LIKE %:#{#keywords}% )  AND swiper_status != 'draft' AND swiper_status != 'deleted'", nativeQuery = true)
+    Page<ClientSwiper> findAllClassSwiper(String keywords, Pageable pageable);
 
     /**
      * ※审核方法
@@ -95,7 +95,7 @@ public interface ClientSwiperDao extends JpaRepository<ClientSwiper, String> {
     @Query(value = "select * from client_swiper where ( swiper_name LIKE %:#{#keywords}% ) and swiper_status != 'draft'", nativeQuery = true)
     Page<ClientSwiper> findAllExistSwiper(String keywords, Pageable pageable);
 
-    @Query(value = "select * from client_swiper where ( swiper_name LIKE %:#{#keywords}% ) and swiper_status != :#{#status}", nativeQuery = true)
+    @Query(value = "select * from client_swiper where ( swiper_name LIKE %:#{#keywords}% ) and swiper_status = :#{#status}", nativeQuery = true)
     Page<ClientSwiper> staffFindSwiperByKeywordsAndStatus(String keywords, Pageable pageable, String status);
 }
 
