@@ -37,6 +37,9 @@ public interface MediaVideoDao extends JpaRepository<MediaVideo, String> {
     @Query(value = "select * from media_video WHERE video_title LIKE %:#{#keywords}% OR video_profile LIKE %:#{#keywords}%", nativeQuery = true)
     Page<MediaVideo> staffFindVideoByKeywords(String keywords, Pageable pageable);
 
+    @Query(value = "select * from media_video WHERE (video_title LIKE %:#{#keywords}% OR video_profile LIKE %:#{#keywords}%) and video_status = :#{#status}", nativeQuery = true)
+    Page<MediaVideo> staffFindVideoByKeywordsAndStatus(String keywords, Pageable pageable, String status);
+
 
     /**
      * ※审核方法

@@ -2,6 +2,7 @@ package com.zenghui.easywrite.controller;
 
 import com.zenghui.easywrite.common.api.ApiResult;
 import com.zenghui.easywrite.dto.SearchDto;
+import com.zenghui.easywrite.entity.client.ClientVideo;
 import com.zenghui.easywrite.entity.media.MediaVideo;
 import com.zenghui.easywrite.service.MediaVideoService;
 import com.zenghui.easywrite.vo.web.PageResult;
@@ -35,13 +36,16 @@ public class MediaController {
 
     @ApiOperation("视频的添加")
     @PostMapping("/video/add")
-    public ApiResult<String> videoAdd(@RequestBody MediaVideo mediaVideo){
+    public ApiResult<String> videoAdd(@RequestBody MediaVideo video ,@RequestHeader(value = "userName",defaultValue = "曾辉") String username){
+        String id = "";
         try{
-            videoService.add(mediaVideo);
+            video.setCreateBy(username);
+            video.setUpdateBy(username);
+            id = videoService.add(video);
         }catch (Exception e){
-            ApiResult.failed();
+            return ApiResult.failed();
         }
-        return ApiResult.success();
+        return ApiResult.success(id);
     }
 
     @ApiOperation("删除单个视频")
@@ -70,20 +74,30 @@ public class MediaController {
     @PostMapping("/video/find_all_by_keywords")
     public ApiResult<PageResult<MediaVideo>> videoFindAllByKeywords(@RequestBody SearchDto searchDto) {
         Page<MediaVideo> page;
-        PageResult<MediaVideo> pageResult;
+        PageResult<MediaVideo> pageResult = new PageResult<>();
         try {
+            //这里不同于给客户端的，给员工的字段更多
             if (searchDto.getKeywords() == null || "".equals(searchDto.getKeywords())) {
-                page = videoService.staffFindAllByKeywords("", searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
-                // 当关键字为空时，查询所有
+                if (searchDto.getStatus() == null || "".equals(searchDto.getStatus())){
+                    // 当关键字,status为空时，查询所有
+                    page = videoService.staffFindAllByKeywords("", searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+                }else {
+                    page = videoService.staffFindAllByKeywordsAndStatus("", searchDto.getStatus(),searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+
+                }
             } else {
-                page = videoService.staffFindAllByKeywords(searchDto.getKeywords(), searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+                if (searchDto.getStatus() == null || "".equals(searchDto.getStatus())){
+                    // 当关键字,status为空时，查询所有
+                    page = videoService.staffFindAllByKeywords(searchDto.getKeywords(), searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+                }else {
+                    page = videoService.staffFindAllByKeywordsAndStatus(searchDto.getKeywords(), searchDto.getStatus(),searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+
+                }
             }
-            pageResult = new PageResult<>();
             pageResult.setSize(searchDto.getSize()).setPage(searchDto.getPage()).setData(page.getContent()).setTotal(page.getTotalElements());
         } catch (Exception e) {
             return ApiResult.failed();
         }
-
         return ApiResult.success(pageResult);
     }
 

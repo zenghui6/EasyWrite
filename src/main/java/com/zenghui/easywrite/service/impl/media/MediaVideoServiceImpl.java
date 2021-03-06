@@ -38,14 +38,16 @@ public class MediaVideoServiceImpl implements MediaVideoService {
      * 添加视频
      * @param mediaVideo
      */
-    public void add(MediaVideo mediaVideo){
+    public String add(MediaVideo mediaVideo){
         mediaVideo.setCreateAt(new Date());
         mediaVideo.setUpdateAt(new Date());
-        mediaVideo.setUpdateBy((String) session.getAttribute("user"));
-        mediaVideo.setCreateBy((String) session.getAttribute("user"));
+        mediaVideo.setUpdateBy("zh");
+        mediaVideo.setCreateBy("zh");
         mediaVideo.setId(snowflakeIdWorker.nextId());
         mediaVideo.setIsDel(false);
         mediaVideoDao.save(mediaVideo);
+        System.out.println(mediaVideo.getId());
+        return mediaVideo.getId();
     }
 
 
@@ -63,6 +65,12 @@ public class MediaVideoServiceImpl implements MediaVideoService {
         return mediaVideoDao.staffFindVideoByKeywords(keywords,pageable);
     }
 
+    @Override
+    public Page<MediaVideo> staffFindAllByKeywordsAndStatus(String keywords, String status, int page, int size, Sort.Direction direction) {
+        page--;
+        Pageable pageable = PageRequest.of(page, size, direction, "update_at");
+        return mediaVideoDao.staffFindVideoByKeywordsAndStatus(keywords, pageable,status);
+    }
     /**
      * 分页分类返回所有视频条目
      * @param page

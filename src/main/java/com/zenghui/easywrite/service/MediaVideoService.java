@@ -14,11 +14,13 @@ import org.springframework.data.domain.Sort;
  * @since 2021-02-09 20:27:11
  */
 public interface MediaVideoService {
-    void add(MediaVideo mediaVideo);
+    String add(MediaVideo mediaVideo);
     Page<MediaVideo> staffFindAllByKeywords(String keywords, int page, int size, Sort.Direction direction);
     Page<MediaVideo> findAllClass(String keywords, int page, int size, String active, Sort.Direction direction);
     Page<MediaVideo> findAllExist(String keywords, int page, int size, Sort.Direction direction);
     MediaVideo findOneById(String id);
     void update(MediaVideo mediaVideo);
     void deleteOne(String id);
+
+    Page<MediaVideo> staffFindAllByKeywordsAndStatus(String s, String status, int page, int size, Sort.Direction direction);
 }

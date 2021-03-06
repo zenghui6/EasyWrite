@@ -53,6 +53,15 @@ public class MediaVideo implements Serializable {
     @Column(name = "video_cid")
     private String videoCid;
 
+    @ApiModelProperty("视频aid")
+    @Column(name = "video_aid")
+    private String videoAid;
+
+    @ApiModelProperty("视频aid")
+    @Column(name = "video_bvid")
+    private String videoBvid;
+
+
     @ApiModelProperty("视频url")
     @Column(name = "video_url")
     private String videoUrl;
