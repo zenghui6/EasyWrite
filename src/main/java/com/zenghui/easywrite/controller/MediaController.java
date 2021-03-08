@@ -80,7 +80,7 @@ public class MediaController {
             if (searchDto.getKeywords() == null || "".equals(searchDto.getKeywords())) {
                 if (searchDto.getStatus() == null || "".equals(searchDto.getStatus())){
                     // 当关键字,status为空时，查询所有
-                    page = videoService.staffFindAllByKeywords("", searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+                    page = videoService.findAllClass("", searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
                 }else {
                     page = videoService.staffFindAllByKeywordsAndStatus("", searchDto.getStatus(),searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
 
@@ -88,7 +88,7 @@ public class MediaController {
             } else {
                 if (searchDto.getStatus() == null || "".equals(searchDto.getStatus())){
                     // 当关键字,status为空时，查询所有
-                    page = videoService.staffFindAllByKeywords(searchDto.getKeywords(), searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+                    page = videoService.findAllClass(searchDto.getKeywords(), searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
                 }else {
                     page = videoService.staffFindAllByKeywordsAndStatus(searchDto.getKeywords(), searchDto.getStatus(),searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
 

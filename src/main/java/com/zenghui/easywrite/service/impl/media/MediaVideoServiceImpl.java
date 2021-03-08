@@ -77,11 +77,10 @@ public class MediaVideoServiceImpl implements MediaVideoService {
      * @param size
      * @return
      */
-    public Page<MediaVideo> findAllClass(String keywords, int page, int size, String active, Sort.Direction direction){
+    public Page<MediaVideo> findAllClass(String keywords, int page, int size, Sort.Direction direction){
         page--;
         Pageable pageable = PageRequest.of(page,size, direction, "create_at");
-        Boolean activeTemp = Boolean.parseBoolean(active);
-        return mediaVideoDao.findAllClassVideo(keywords, pageable, activeTemp);
+        return mediaVideoDao.findAllClassVideo(keywords, pageable);
     }
 
     /**
@@ -113,7 +112,7 @@ public class MediaVideoServiceImpl implements MediaVideoService {
         MediaVideo mediaVideoTemp =this.findOneById(mediaVideo.getId());
         BeanUtils.copyProperties(mediaVideo, mediaVideoTemp);
         mediaVideoTemp.setUpdateAt(new Date());
-        mediaVideoTemp.setUpdateBy((String) session.getAttribute("user"));
+        mediaVideoTemp.setUpdateBy("admin");
         mediaVideoDao.saveAndFlush(mediaVideoTemp);
     }
 

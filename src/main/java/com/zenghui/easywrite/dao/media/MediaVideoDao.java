@@ -57,10 +57,9 @@ public interface MediaVideoDao extends JpaRepository<MediaVideo, String> {
      *
      * 分页分类返回所有的视频条目
      * @param pageable
-     * @param active
      * @param keywords
      * @return
      */
-    @Query(value = "select * from media_video where ( video_title LIKE %:#{#keywords}% OR video_profile LIKE %:#{#keywords}% ) and is_del = :active and video_status != 'draft'",nativeQuery = true)
-    Page<MediaVideo> findAllClassVideo(String keywords, Pageable pageable, Boolean active);
+    @Query(value = "select * from media_video where ( video_title LIKE %:#{#keywords}% OR video_profile LIKE %:#{#keywords}% ) and video_status != 'draft' and video_status != 'deleted'",nativeQuery = true)
+    Page<MediaVideo> findAllClassVideo(String keywords, Pageable pageable);
 }

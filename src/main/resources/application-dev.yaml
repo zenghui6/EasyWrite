@@ -69,20 +69,16 @@ spring:
     show-sql: true
     open-in-view: true
 
+# RabbitMQ 配置
+  rabbitmq:
+    host: 127.0.0.1
+    virtual-host: /upload
 
 
 # 文件上传路径
 file:
-  path: D:/upload/
+  path: F:/ideaProjects/upload/
 
-
-# 上传阿里OSS
-aliyun:
-  oss:
-    accessKeyId: LTAI4GBQwy2MBsSk7UJZozBf
-    accessKeySecret: tnR1v5si80V1ecSThld44TGbzJA9xs
-    endpoint: oss-cn-beijing.aliyuncs.com
-    bucketName: zenghuituku
 
 
 

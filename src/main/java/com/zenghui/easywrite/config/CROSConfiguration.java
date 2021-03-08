@@ -53,6 +53,6 @@ public class CROSConfiguration implements WebMvcConfigurer {
      */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/api/file/**").addResourceLocations("file:" + "D:/upload/");
+        registry.addResourceHandler("/api/file/**").addResourceLocations("file:" + "F:/ideaProjects/upload/");
     }
 }

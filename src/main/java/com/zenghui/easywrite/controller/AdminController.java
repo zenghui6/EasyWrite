@@ -1,5 +1,6 @@
 package com.zenghui.easywrite.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.zenghui.easywrite.common.api.ApiResult;
 import com.zenghui.easywrite.dto.AdminSearchDto;
 import com.zenghui.easywrite.dto.RegisterDTO;
@@ -15,13 +16,16 @@ import com.zenghui.easywrite.vo.web.PageResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
+
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,6 +58,9 @@ public class AdminController {
 
     @Autowired
     private SnowflakeIdWorker snowflakeIdWorker;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
 
     //    -----------以下为员工信息的增删改查----------
@@ -259,9 +266,14 @@ public class AdminController {
         return ApiResult.success(pageResult);
     }
 
+    /**
+     * 暂时未使用
+     * @param searchDto
+     * @return
+     */
     @ApiOperation("分页查找所有未被删除的视频")
     @PostMapping("/swiper/find_all")
-    public ApiResult<PageResult<ClientSwiper>> swiperFindAllExist(@RequestBody AdminSearchDto searchDto){
+    public ApiResult<PageResult<ClientSwiper>> swiperFindAllExist(@RequestBody SearchDto searchDto){
         Page<ClientSwiper> pageTemp;
         PageResult<ClientSwiper> pageResult;
         try {
@@ -283,15 +295,23 @@ public class AdminController {
 
     @ApiOperation("分页分类查找所有视频")
     @PostMapping("/media_video/find_all_class")
-    public ApiResult<PageResult<MediaVideo>> mediaVideoFindAllClass(@RequestBody AdminSearchDto searchDto){
+    public ApiResult<PageResult<MediaVideo>> mediaVideoFindAllClass(@RequestBody SearchDto searchDto){
         Page<MediaVideo> pageTemp;
         PageResult<MediaVideo> pageResult;
         try {
             if (searchDto.getKeywords() == null || "".equals(searchDto.getKeywords())) {
-                pageTemp = mediaVideoService.findAllClass("", searchDto.getPage(), searchDto.getSize(), searchDto.getActive(), searchDto.getDirection());
-            }
-            else{
-                pageTemp = mediaVideoService.findAllClass(searchDto.getKeywords(), searchDto.getPage(), searchDto.getSize(), searchDto.getActive(), searchDto.getDirection());
+                if (searchDto.getStatus() == null || "".equals(searchDto.getStatus())) {
+                    pageTemp = mediaVideoService.findAllClass("", searchDto.getPage(), searchDto.getSize(),  searchDto.getDirection());
+                } else {
+                    pageTemp = mediaVideoService.staffFindAllByKeywordsAndStatus("", searchDto.getStatus(), searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+                }
+            }else{
+                if (searchDto.getStatus() == null || "".equals(searchDto.getStatus())) {
+                    pageTemp = mediaVideoService.findAllClass(searchDto.getKeywords(), searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+                }else {
+                    pageTemp = mediaVideoService.staffFindAllByKeywordsAndStatus(searchDto.getKeywords(), searchDto.getStatus(), searchDto.getPage(), searchDto.getSize(), searchDto.getDirection());
+
+                }
             }
             pageResult = new PageResult<>();
             pageResult.setTotal(pageTemp.getTotalElements()).setData(pageTemp.getContent()).setPage(searchDto.getPage()).setSize(searchDto.getSize());
@@ -300,6 +320,33 @@ public class AdminController {
             return ApiResult.failed();
         }
         return ApiResult.success(pageResult);
+    }
+
+    @ApiOperation("视频的分发+更新")
+    @PostMapping("/media_video/distribution")
+    public ApiResult<String> mediaVideoDistribution(@RequestBody MediaVideo mediaVideo){
+        ApiResult<String> result = new ApiResult<>();
+        try{
+            String messageId = snowflakeIdWorker.nextId();
+            Date createTime = new Date();
+            Map<String, Object> map=new HashMap<>(16);
+            map.put("messageId",messageId);
+            map.put("messageData",mediaVideo);
+            map.put("createTime",createTime);
+            //convertAndSend(String exchange, String routingKey, Object message)
+            //参数1：交换机名称；参数2：路由键，这里没有使用到路由键，所以为空；参数3：发送的消息内容
+            //将消息携带绑定键值：TestDirectRouting 发送到交换机TestDirectExchange
+            System.out.println(map);
+            JSONObject jsonObject = new JSONObject(map);
+            System.out.println(jsonObject);
+            rabbitTemplate.convertAndSend("videoSendingExchange", "videoSendingRouting", jsonObject.toString());
+
+            mediaVideoService.update(mediaVideo);
+            result = ApiResult.success("发布到消息队列成功");
+        }catch (Exception e){
+            result = ApiResult.failed();
+        }
+        return result;
     }
 
     @ApiOperation("分页查找所有未被删除的视频")
